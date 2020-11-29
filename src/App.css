@@ -1,1 +1,14 @@
 @import '~antd/dist/antd.css';
+
+@media (min-width: 800px) {
+    body {
+        background: #f6f6f6;
+    }
+    .appWrapper {
+        min-height: 600px;
+        background: #f0f2f5;
+        max-width: 380px;
+        margin: 25px auto;
+        box-shadow: 0 30px 40px rgba(0,0,0,0.15), 0 4px 10px rgba(0,0,0,0.1);
+    }
+}
