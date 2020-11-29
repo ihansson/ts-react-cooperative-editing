@@ -1,5 +1,7 @@
 import { Button, Checkbox, Form, Input } from "antd";
-import { ValidateErrorEntity } from "rc-field-form/lib/interface";
+import { useLogin } from "../../lib/api";
+import { useHistory } from "react-router-dom";
+import { FormNotices } from "../helpers/FormNotices";
 
 const layout = {
   labelCol: { span: 8 },
@@ -9,14 +11,22 @@ const tailLayout = {
   wrapperCol: { offset: 8, span: 16 },
 };
 
+interface LoginFormValues {
+  username: string;
+  password: string;
+}
+
 export const LoginForm = () => {
-  const onFinish = (values: string) => {
-    console.log("Success:", values);
+  const history = useHistory();
+  const [error, loading, success, handleLogin] = useLogin();
+
+  const onFinish = (values: LoginFormValues) => {
+    handleLogin(values.username, values.password);
   };
 
-  const onFinishFailed = (errorInfo: ValidateErrorEntity) => {
-    console.log("Failed:", errorInfo);
-  };
+  if (success) {
+    setTimeout(() => history.push("/edit"), 500);
+  }
 
   return (
     <Form
@@ -24,9 +34,9 @@ export const LoginForm = () => {
       name="basic"
       initialValues={{ remember: true }}
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
       labelAlign="left"
     >
+      <FormNotices {...{ error, loading, success }} />
       <Form.Item
         label="Username"
         name="username"
