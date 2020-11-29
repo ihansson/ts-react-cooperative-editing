@@ -2,6 +2,7 @@
 
 @media (min-width: 800px) {
     body {
+        overflow-y: scroll !important;
         background: #f6f6f6;
     }
     .appWrapper {

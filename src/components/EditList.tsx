@@ -1,6 +1,12 @@
-import { AddItemForm } from "./AddItemForm";
-import { EditorList, Item } from "../lib/schema";
+import { AddItemForm } from "./forms/AddItemForm";
+import { Item } from "../lib/schema";
 import { getMockEditors, getMockItems } from "../lib/mocks";
+import { Button, Typography } from "antd";
+import { useState } from "react";
+import { UpdateItemForm } from "./forms/UpdateItemForm";
+import { CurrentEditorsMessage } from "./helpers/CurrentEditorsMessage";
+
+const { Title } = Typography;
 
 export const EditList = () => {
   const items = getMockItems(false);
@@ -22,18 +28,26 @@ export const EditList = () => {
 };
 
 export const EditListItem = ({ item }: { item: Item }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+
   return (
     <li>
-      {item.id} {item.name}
+      <Title level={4}>
+        {item.id} {item.name}
+      </Title>
+      <p>{item.property}</p>
+      <CurrentEditorsMessage editors={item.editors} />
+      <Button
+        type="primary"
+        onClick={() => {
+          setModalVisible(true);
+        }}
+      >
+        Edit
+      </Button>
+      <UpdateItemForm
+        {...{ item, visible: modalVisible, setVisible: setModalVisible }}
+      />
     </li>
   );
-};
-
-export const CurrentEditorsMessage = ({ editors }: { editors: EditorList }) => {
-  const message =
-    editors.length === 0
-      ? "There are no editors currently."
-      : editors.map((editor) => editor.name).join(", ") +
-        " are currently editing this.";
-  return <p>{message}</p>;
 };

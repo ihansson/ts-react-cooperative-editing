@@ -1,5 +1,5 @@
 import { Layout, Typography } from "antd";
-import { LoginForm } from "../LoginForm";
+import { LoginForm } from "../forms/LoginForm";
 
 const { Title } = Typography;
 

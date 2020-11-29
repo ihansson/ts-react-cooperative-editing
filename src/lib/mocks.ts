@@ -3,8 +3,18 @@ import { Editor, EditorList, Item, ItemList } from "./schema";
 export function getMockItems(return_empty = false) {
   if (return_empty) return [] as ItemList;
   return [
-    { id: "1", name: "Banana" } as Item,
-    { id: "2", name: "Apple" } as Item,
+    {
+      id: "1",
+      name: "Banana",
+      property: "Some Prop",
+      editors: getMockEditors(),
+    } as Item,
+    {
+      id: "2",
+      name: "Apple",
+      property: "Another Prop",
+      editors: getMockEditors(true),
+    } as Item,
   ] as ItemList;
 }
 

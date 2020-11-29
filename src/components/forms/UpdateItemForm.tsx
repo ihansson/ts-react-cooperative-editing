@@ -1,14 +1,19 @@
 import { ValidateErrorEntity } from "rc-field-form/lib/interface";
-import { Button, Card, Form, Input, Typography } from "antd";
-const { Title } = Typography;
+import { Form, Input, Modal } from "antd";
+import { Item } from "../../lib/schema";
 
-export const AddItemForm = () => {
+export const UpdateItemForm = ({
+  item,
+  visible,
+  setVisible,
+}: {
+  item: Item;
+  visible: boolean;
+  setVisible: (visible: boolean) => void;
+}) => {
   const layout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
-  };
-  const tailLayout = {
-    wrapperCol: { offset: 8, span: 16 },
   };
 
   const onFinish = (values: string) => {
@@ -20,8 +25,12 @@ export const AddItemForm = () => {
   };
 
   return (
-    <Card>
-      <Title level={3}>Add Item</Title>
+    <Modal
+      title={item.name}
+      visible={visible}
+      onOk={() => setVisible(false)}
+      onCancel={() => setVisible(false)}
+    >
       <Form
         {...layout}
         name="basic"
@@ -31,19 +40,14 @@ export const AddItemForm = () => {
         labelAlign="left"
       >
         <Form.Item
-          label="Name"
-          name="name"
-          rules={[{ required: true, message: "Please input a name" }]}
+          label="Property"
+          name="property"
+          initialValue={item.property}
+          rules={[{ required: true, message: "Please enter a property" }]}
         >
           <Input />
         </Form.Item>
-
-        <Form.Item {...tailLayout}>
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
       </Form>
-    </Card>
+    </Modal>
   );
 };
