@@ -8,6 +8,7 @@ export interface Item {
 export type ItemList = Array<Item>;
 
 export interface Editor {
+  id: string;
   name: string;
 }
 

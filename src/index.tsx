@@ -2,6 +2,10 @@ import React from "react";
 import ReactDOM from "react-dom";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import firebase from "firebase/app";
+import { firebaseConfig } from "./lib/api";
+
+firebase.initializeApp(firebaseConfig);
 
 ReactDOM.render(<App />, document.getElementById("root"));
 

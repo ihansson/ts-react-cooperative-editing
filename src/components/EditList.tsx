@@ -1,26 +1,34 @@
 import { AddItemForm } from "./forms/AddItemForm";
 import { Item } from "../lib/schema";
-import { getMockEditors, getMockItems } from "../lib/mocks";
+import { getMockEditors } from "../lib/mocks";
 import { Button, Typography } from "antd";
 import { useState } from "react";
 import { UpdateItemForm } from "./forms/UpdateItemForm";
 import { CurrentEditorsMessage } from "./helpers/CurrentEditorsMessage";
+import { useData } from "../lib/api";
+import { FormNotices } from "./helpers/FormNotices";
 
 const { Title } = Typography;
 
 export const EditList = () => {
-  const items = getMockItems(false);
+  const [error, loading, success, data] = useData("3NNo2ftgILZTdN2nWDzU");
+
   return (
     <div>
-      <CurrentEditorsMessage editors={getMockEditors()} />
-      {items.length > 0 ? (
-        <ul>
-          {items.map((item) => (
-            <EditListItem key={item.id} {...{ item }} />
-          ))}
-        </ul>
-      ) : (
-        <p>There are no items currently.</p>
+      <FormNotices {...{ error, loading, success }} />
+      {success && (
+        <div>
+          <CurrentEditorsMessage editors={data.editors} />
+          {data.items.length > 0 ? (
+            <ul>
+              {data.items.map((item) => (
+                <EditListItem key={item.id} {...{ item }} />
+              ))}
+            </ul>
+          ) : (
+            <p>There are no items currently.</p>
+          )}
+        </div>
       )}
       <AddItemForm />
     </div>
@@ -36,7 +44,7 @@ export const EditListItem = ({ item }: { item: Item }) => {
         {item.id} {item.name}
       </Title>
       <p>{item.property}</p>
-      <CurrentEditorsMessage editors={item.editors} />
+      <CurrentEditorsMessage editors={getMockEditors()} />
       <Button
         type="primary"
         onClick={() => {

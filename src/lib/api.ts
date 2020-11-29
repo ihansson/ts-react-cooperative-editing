@@ -3,6 +3,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
+import { Editor, EditorList, ItemList, Item } from "./schema";
 
 export const firebaseConfig = {
   apiKey: env.API_KEY,
@@ -13,8 +14,6 @@ export const firebaseConfig = {
   messagingSenderId: env.MESSAGING_SENDER_ID,
   appId: env.APP_ID,
 };
-
-firebase.initializeApp(firebaseConfig);
 
 export function useLogin() {
   const [loading, setLoading] = useState(false);
@@ -49,13 +48,21 @@ export function useLogin() {
   ];
 }
 
-interface FirebaseData {}
+interface FirebaseData {
+  meta: any;
+  editors: EditorList;
+  items: ItemList;
+}
 
-export function useData() {
+export function useData(itemId: string) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [data, setData] = useState({} as FirebaseData);
+  const [data, setData] = useState({
+    meta: {},
+    editors: [],
+    items: [],
+  } as FirebaseData);
 
   const db = firebase.firestore();
   const collectionRef = useRef(db.collection("items"));
@@ -66,10 +73,35 @@ export function useData() {
       setSuccess(false);
       setError("");
       try {
-        await collectionRef.current.onSnapshot((results) => {
-          const _data = results.docs as Array<any>;
-          setData(_data);
+        await collectionRef.current.doc(itemId).onSnapshot((_data) => {
+          setData((data) => ({ ...data, meta: _data.data() }));
         });
+        await collectionRef.current
+          .doc(itemId)
+          .collection("editors")
+          .onSnapshot((_data) => {
+            const _editors = _data.docs.map(
+              (doc) =>
+                ({
+                  ...doc.data(),
+                  id: doc.id,
+                } as Editor)
+            );
+            setData((data) => ({ ...data, editors: _editors as EditorList }));
+          });
+        await collectionRef.current
+          .doc(itemId)
+          .collection("items")
+          .onSnapshot((_data) => {
+            const _items = _data.docs.map(
+              (doc) =>
+                ({
+                  ...doc.data(),
+                  id: doc.id,
+                } as Item)
+            );
+            setData((data) => ({ ...data, items: _items as ItemList }));
+          });
         setSuccess(true);
       } catch (e) {
         setError(e.message);
@@ -77,7 +109,7 @@ export function useData() {
       setLoading(false);
     };
     queryWithFirebase();
-  }, [collectionRef, setError, setLoading]);
+  }, [collectionRef, setError, setLoading, itemId]);
 
   return [error, loading, success, data] as [
     string,
