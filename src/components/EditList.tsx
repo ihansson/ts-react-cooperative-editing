@@ -1,11 +1,11 @@
+import firebase from "firebase/app";
 import { AddItemForm } from "./forms/AddItemForm";
-import { Item } from "../lib/schema";
-import { getMockEditors } from "../lib/mocks";
+import { EditorList, Editor, Item } from "../lib/schema";
 import { Button, Typography } from "antd";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { UpdateItemForm } from "./forms/UpdateItemForm";
 import { CurrentEditorsMessage } from "./helpers/CurrentEditorsMessage";
-import { useData } from "../lib/api";
+import { useData, useUpdateEditors } from "../lib/api";
 import { FormNotices } from "./helpers/FormNotices";
 
 const { Title } = Typography;
@@ -22,7 +22,15 @@ export const EditList = () => {
           {data.items.length > 0 ? (
             <ul>
               {data.items.map((item) => (
-                <EditListItem key={item.id} {...{ item }} />
+                <EditListItem
+                  key={item.id}
+                  {...{
+                    item,
+                    editors: data.editors.filter(
+                      (editor: Editor) => editor.editing === item.id
+                    ),
+                  }}
+                />
               ))}
             </ul>
           ) : (
@@ -35,26 +43,44 @@ export const EditList = () => {
   );
 };
 
-export const EditListItem = ({ item }: { item: Item }) => {
+export const EditListItem = ({
+  item,
+  editors,
+}: {
+  item: Item;
+  editors: EditorList;
+}) => {
+  const [, , , updateEditors] = useUpdateEditors("3NNo2ftgILZTdN2nWDzU");
   const [modalVisible, setModalVisible] = useState(false);
+
+  function onOpen() {
+    setModalVisible(true);
+    updateEditors(firebase.auth().currentUser?.uid as string, {
+      editing: item.id,
+    });
+  }
+
+  const onClose = useCallback(() => {
+    updateEditors(firebase.auth().currentUser?.uid as string, {
+      editing: "",
+    });
+    setModalVisible(false);
+  }, [updateEditors]);
 
   return (
     <li>
-      <Title level={4}>
-        {item.id} {item.name}
-      </Title>
+      <Title level={4}>{item.name}</Title>
       <p>{item.property}</p>
-      <CurrentEditorsMessage editors={getMockEditors()} />
-      <Button
-        type="primary"
-        onClick={() => {
-          setModalVisible(true);
-        }}
-      >
+      <CurrentEditorsMessage editors={editors} />
+      <Button type="primary" onClick={onOpen} disabled={editors.length > 0}>
         Edit
       </Button>
       <UpdateItemForm
-        {...{ item, visible: modalVisible, setVisible: setModalVisible }}
+        {...{
+          item,
+          visible: modalVisible,
+          onClose: onClose,
+        }}
       />
     </li>
   );

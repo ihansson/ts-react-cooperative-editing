@@ -1,42 +1,54 @@
-import { ValidateErrorEntity } from "rc-field-form/lib/interface";
 import { Form, Input, Modal } from "antd";
 import { Item } from "../../lib/schema";
+import { useUpdateItem } from "../../lib/api";
+import { FormNotices } from "../helpers/FormNotices";
+
+const layout = {
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
+};
 
 export const UpdateItemForm = ({
   item,
   visible,
-  setVisible,
+  onClose,
 }: {
   item: Item;
   visible: boolean;
-  setVisible: (visible: boolean) => void;
+  onClose: () => void;
 }) => {
-  const layout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 16 },
-  };
+  const [form] = Form.useForm();
 
-  const onFinish = (values: string) => {
-    console.log("Success:", values);
-  };
+  const [error, loading, success, updateItem] = useUpdateItem(
+    "3NNo2ftgILZTdN2nWDzU"
+  );
 
-  const onFinishFailed = (errorInfo: ValidateErrorEntity) => {
-    console.log("Failed:", errorInfo);
+  const onFinish = async (values: any) => {
+    await updateItem(item.id, values);
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    onClose();
   };
 
   return (
     <Modal
       title={item.name}
       visible={visible}
-      onOk={() => setVisible(false)}
-      onCancel={() => setVisible(false)}
+      onOk={() => {
+        form.validateFields().then((values) => {
+          onFinish(values);
+        });
+      }}
+      onCancel={() => {
+        onClose();
+      }}
     >
+      <FormNotices {...{ error, loading, success }} />
       <Form
         {...layout}
+        form={form}
         name="basic"
         initialValues={{ remember: true }}
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         labelAlign="left"
       >
         <Form.Item
