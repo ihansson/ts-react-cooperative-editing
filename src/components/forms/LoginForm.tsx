@@ -1,4 +1,4 @@
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Form, Input } from "antd";
 import { useLogin } from "../../lib/api";
 import { useHistory } from "react-router-dom";
 import { FormNotices } from "../helpers/FormNotices";
@@ -6,9 +6,6 @@ import { FormNotices } from "../helpers/FormNotices";
 const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
-};
-const tailLayout = {
-  wrapperCol: { offset: 8, span: 16 },
 };
 
 interface LoginFormValues {
@@ -55,11 +52,7 @@ export const LoginForm = () => {
         <Input.Password />
       </Form.Item>
 
-      <Form.Item {...tailLayout} name="remember" valuePropName="checked">
-        <Checkbox>Remember me</Checkbox>
-      </Form.Item>
-
-      <Form.Item {...tailLayout}>
+      <Form.Item>
         <Button type="primary" htmlType="submit">
           Submit
         </Button>

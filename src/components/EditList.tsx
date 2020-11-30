@@ -1,7 +1,7 @@
 import firebase from "firebase/app";
 import { AddItemForm } from "./forms/AddItemForm";
 import { EditorList, Editor, Item } from "../lib/schema";
-import { Button, Typography } from "antd";
+import { Button, Card, Space, Typography } from "antd";
 import { useCallback, useState } from "react";
 import { UpdateItemForm } from "./forms/UpdateItemForm";
 import { CurrentEditorsMessage } from "./helpers/CurrentEditorsMessage";
@@ -20,7 +20,7 @@ export const EditList = () => {
         <div>
           <CurrentEditorsMessage editors={data.editors} />
           {data.items.length > 0 ? (
-            <ul>
+            <section>
               {data.items.map((item) => (
                 <EditListItem
                   key={item.id}
@@ -32,7 +32,7 @@ export const EditList = () => {
                   }}
                 />
               ))}
-            </ul>
+            </section>
           ) : (
             <p>There are no items currently.</p>
           )}
@@ -68,13 +68,18 @@ export const EditListItem = ({
   }, [updateEditors]);
 
   return (
-    <li>
-      <Title level={4}>{item.name}</Title>
-      <p>{item.property}</p>
+    <Card
+      title={item.name}
+      style={{ marginBottom: "0.5em" }}
+      size="small"
+      extra={
+        <Button type="primary" onClick={onOpen} disabled={editors.length > 0}>
+          Edit
+        </Button>
+      }
+    >
+      <strong>Property:</strong> {item.property}
       <CurrentEditorsMessage editors={editors} />
-      <Button type="primary" onClick={onOpen} disabled={editors.length > 0}>
-        Edit
-      </Button>
       <UpdateItemForm
         {...{
           item,
@@ -82,6 +87,6 @@ export const EditListItem = ({
           onClose: onClose,
         }}
       />
-    </li>
+    </Card>
   );
 };
